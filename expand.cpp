@@ -407,7 +407,10 @@ namespace Sass {
     Block* body = e->block();
 
     if (map) {
-      for (auto key : map->keys()) {
+      vector<Sass::Expression*>::const_iterator it = map->keys().begin();
+        while(it != map->keys().end()) {
+        Sass::Expression* key = *it; ++it;
+      // for (auto key : map->keys()) {
         Expression* k = key->perform(eval->with(env, backtrace));
         Expression* v = map->at(key)->perform(eval->with(env, backtrace));
 

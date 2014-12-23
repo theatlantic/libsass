@@ -34,7 +34,10 @@ namespace Sass {
   {
     Sass_Value* v = sass_make_map(m->length());
     int i = 0;
-    for (auto key : m->keys()) {
+    vector<Sass::Expression*>::const_iterator it = m->keys().begin();
+      while(it != m->keys().end()) {
+      Sass::Expression* key = *it; ++it;
+    // for (auto key : m->keys()) {
       sass_map_set_key(v, i, key->perform(this));
       sass_map_set_value(v, i, m->at(key)->perform(this));
       i++;

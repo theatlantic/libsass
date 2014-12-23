@@ -1293,7 +1293,10 @@ namespace Sass {
     {
       Map* m = ARGM("$map", Map, ctx);
       List* result = new (ctx.mem) List(pstate, m->length(), List::COMMA);
-      for ( auto key : m->keys()) {
+      vector<Sass::Expression*>::const_iterator it = m->keys().begin();
+        while(it != m->keys().end()) {
+        Sass::Expression* key = *it; ++it;
+      // for ( auto key : m->keys()) {
         *result << key;
       }
       return result;
@@ -1304,7 +1307,10 @@ namespace Sass {
     {
       Map* m = ARGM("$map", Map, ctx);
       List* result = new (ctx.mem) List(pstate, m->length(), List::COMMA);
-      for ( auto key : m->keys()) {
+      vector<Sass::Expression*>::const_iterator it = m->keys().begin();
+        while(it != m->keys().end()) {
+        Sass::Expression* key = *it; ++it;
+      // for ( auto key : m->keys()) {
         *result << m->at(key);
       }
       return result;
@@ -1330,7 +1336,10 @@ namespace Sass {
       Map* m = ARGM("$map", Map, ctx);
       List* arglist = ARG("$keys", List);
       Map* result = new (ctx.mem) Map(pstate, 1);
-      for (auto key : m->keys()) {
+      vector<Sass::Expression*>::const_iterator it = m->keys().begin();
+        while(it != m->keys().end()) {
+        Sass::Expression* key = *it; ++it;
+      // for (auto key : m->keys()) {
         remove = false;
         for (size_t j = 0, K = arglist->length(); j < K && !remove; ++j) {
           remove = eq(key, arglist->value_at_index(j), ctx);

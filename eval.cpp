@@ -218,9 +218,11 @@ namespace Sass {
     Expression* val = 0;
 
     if (map) {
-      for (auto key : map->keys()) {
-        Expression* value = map->at(key);
-
+      vector<Sass::Expression*>::const_iterator it = map->keys().begin();
+        while(it != map->keys().end()) {
+        Sass::Expression* key = *it; ++it;
+      // for (auto key : map->keys()) {
+        Sass::Expression *value = map->at(key);
         if (variables.size() == 1) {
           List* variable = new (ctx.mem) List(map->pstate(), 2, List::SPACE);
           *variable << key;
@@ -230,7 +232,6 @@ namespace Sass {
           env->set_local(variables[0], key);
           env->set_local(variables[1], value);
         }
-
         val = body->perform(this);
         if (val) break;
       }
@@ -394,7 +395,10 @@ namespace Sass {
     if (m->is_expanded()) return m;
     Map* mm = new (ctx.mem) Map(m->pstate(),
                                   m->length());
-    for (auto key : m->keys()) {
+    vector<Sass::Expression*>::const_iterator it = m->keys().begin();
+      while(it != m->keys().end()) {
+      Sass::Expression* key = *it; ++it;
+    // for (auto key : m->keys()) {
       *mm << std::make_pair(key->perform(this), m->at(key)->perform(this));
     }
     mm->is_expanded(true);
@@ -1080,8 +1084,12 @@ namespace Sass {
         Map* l = static_cast<Map*>(lhs);
         Map* r = static_cast<Map*>(rhs);
         if (l->length() != r->length()) return false;
-        for (auto key : l->keys())
+        vector<Sass::Expression*>::const_iterator it = r->keys().begin();
+          while(it != r->keys().end()) {
+          Sass::Expression* key = *it; ++it;
+        // for (auto key : l->keys()) {
           if (!eq(l->at(key), r->at(key), ctx)) return false;
+        }
         return true;
       } break;
       case Expression::NULL_VAL: {

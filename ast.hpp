@@ -158,7 +158,7 @@ namespace Sass {
     virtual void adjust_after_pushing(T element) { }
   public:
     Vectorized(size_t s = 0) : elements_(vector<T>())
-    { elements_.reserve(s); }
+    { /* elements_.reserve(s); */ }
     virtual ~Vectorized() = 0;
     size_t length() const   { return elements_.size(); }
     bool empty() const      { return elements_.empty(); }
@@ -205,7 +205,7 @@ namespace Sass {
     virtual void adjust_after_pushing(std::pair<Expression*, Expression*> p) { }
   public:
     Hashed(size_t s = 0) : elements_(unordered_map<Expression*, Expression*>(s)), list_(vector<Expression*>())
-    { elements_.reserve(s); list_.reserve(s); reset_duplicate_key(); }
+    { /* elements_.reserve(s); */ list_.reserve(s); reset_duplicate_key(); }
     virtual ~Hashed();
     size_t length() const                  { return list_.size(); }
     bool empty() const                     { return list_.empty(); }
@@ -234,7 +234,10 @@ namespace Sass {
         return *this;
       }
 
-      for (auto key : h->keys()) {
+      vector<Sass::Expression*>::const_iterator it = h->keys().begin();
+        while(it != h->keys().end()) {
+        Sass::Expression* key = *it; ++it;
+      // for (auto key : h->keys()) {
         *this << make_pair(key, h->at(key));
       }
 
@@ -810,8 +813,12 @@ namespace Sass {
       {
         Map& m = dynamic_cast<Map&>(rhs);
         if (!(m && length() == m.length())) return false;
-        for (auto key : keys())
+        vector<Sass::Expression*>::const_iterator it = keys().begin();
+          while(it != keys().end()) {
+          Sass::Expression* key = *it; ++it;
+        // for (auto key : keys()) {
           if (!(*at(key) == *m.at(key))) return false;
+        }
         return true;
       }
       catch (std::bad_cast&)
@@ -825,9 +832,12 @@ namespace Sass {
     {
       if (hash_ > 0) return hash_;
 
-      for (auto key : keys())
+      vector<Sass::Expression*>::const_iterator it = keys().begin();
+        while(it != keys().end()) {
+        Sass::Expression* key = *it; ++it;
+      // for (auto key : keys()) {
         hash_ ^= key->hash() ^ at(key)->hash();
-
+      }
       return hash_;
     }
 
@@ -1057,8 +1067,12 @@ namespace Sass {
       if (hash_ > 0) return hash_;
 
       hash_ = std::hash<string>()(name());
-      for (auto argument : arguments()->elements())
+      vector<Sass::Argument*>::const_iterator it = arguments()->elements().begin();
+      while(it != arguments()->elements().end()) {
+        Sass::Argument* argument = *it; ++it;
+      // for (auto argument : arguments()->elements()) {
         hash_ ^= argument->hash();
+      }
 
       return hash_;
     }
@@ -1426,8 +1440,12 @@ namespace Sass {
     {
       if (hash_ > 0) return hash_;
 
-      for (auto string : elements())
+      vector<Sass::Expression*>::const_iterator it = elements().begin();
+      while(it != elements().end()) {
+        Sass::Expression* string = *it; ++it;
+      // for (auto string : elements()) {
         hash_ ^= string->hash();
+      }
 
       return hash_;
     }

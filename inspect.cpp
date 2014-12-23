@@ -327,7 +327,10 @@ namespace Sass {
     if (map->is_invisible()) return;
     bool items_output = false;
     append_string("(");
-    for (auto key : map->keys()) {
+    vector<Sass::Expression*>::const_iterator it = map->keys().begin();
+      while(it != map->keys().end()) {
+      Sass::Expression* key = *it; ++it;
+    // for (auto key : map->keys()) {
       if (key->is_invisible()) continue;
       if (map->at(key)->is_invisible()) continue;
       if (items_output) append_comma_separator();
