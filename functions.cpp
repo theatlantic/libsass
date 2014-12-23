@@ -11,7 +11,6 @@
 #include "utf8_string.hpp"
 #include "utf8.h"
 
-#include <atomic>
 #include <cstdlib>
 #include <cmath>
 #include <cctype>
@@ -34,6 +33,7 @@
 #if defined __GNUC__
     #ifndef __llvm__
         #if __GNUC__ == 4 && __GNUC_MINOR <= 4
+            #define USE_TR1_RANDOM 1
             #define uniform_real_distribution uniform_real
         #endif
     #endif
@@ -1082,12 +1082,22 @@ namespace Sass {
       if (l) {
         if (trunc(l->value()) != l->value() || l->value() == 0) error("argument $limit of `" + string(sig) + "` must be a positive integer", pstate);
         uniform_real_distribution<> distributor(1, l->value() + 1);
+#ifdef USE_TR1_RANDOM
+        variate_generator <std::mt19937, std::uniform_real<double> > gen(rand, distributor);
+        uint_fast32_t distributed = gen();
+#else
         uint_fast32_t distributed = static_cast<uint_fast32_t>(distributor(rand));
+#endif
         return new (ctx.mem) Number(pstate, (double)distributed);
       }
       else {
         uniform_real_distribution<> distributor(0, 1);
+#ifdef USE_TR1_RANDOM
+        variate_generator <std::mt19937, std::uniform_real<double> > gen(rand, distributor);
+        uint_fast32_t distributed = gen();
+#else
         double distributed = static_cast<double>(distributor(rand));
+#endif
         return new (ctx.mem) Number(pstate, distributed);
      }
     }
@@ -1570,12 +1580,20 @@ namespace Sass {
       // return v;
     }
 
+    std::stringstream ss;
+    uniform_real_distribution<> distributor(0, 4294967296); // 16^8
+#ifdef USE_TR1_RANDOM
+    variate_generator <std::mt19937, std::uniform_real<double> > gen(rand, distributor);
+#endif
+
     Signature unique_id_sig = "unique-id()";
     BUILT_IN(unique_id)
     {
-      std::stringstream ss;
-      uniform_real_distribution<> distributor(0, 4294967296); // 16^8
+#ifdef USE_TR1_RANDOM
+      uint_fast32_t distributed = gen();
+#else
       uint_fast32_t distributed = static_cast<uint_fast32_t>(distributor(rand));
+#endif
       ss << "u" << setfill('0') << setw(8) << std::hex << distributed;
       return new (ctx.mem) String_Constant(pstate, ss.str());
     }
