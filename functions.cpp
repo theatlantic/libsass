@@ -31,6 +31,14 @@
 #define ARGR(argname, argtype, lo, hi) get_arg_r(argname, env, sig, pstate, lo, hi, backtrace)
 #define ARGM(argname, argtype, ctx) get_arg_m(argname, env, sig, pstate, backtrace, ctx)
 
+#if defined __GNUC__
+    #ifndef __llvm__
+        #if __GNUC__ == 4 && __GNUC_MINOR <= 4
+            #define uniform_real_distribution uniform_real
+        #endif
+    #endif
+#endif
+
 namespace Sass {
   using std::stringstream;
   using std::endl;
